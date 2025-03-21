@@ -1,17 +1,48 @@
 {% extends 'base.html.twig' %}
 
+{% block header_title %}
+    <h1>Connexion</h1>
+{% endblock %}
+
+{% block header_img %}{% endblock %}
+
 {% block body %}
-    {% if error %}
-        <div class="alert alert-danger" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
 
-    <form action="{{ path('login_check') }}" method="post">
-        <label for="username">Nom d'utilisateur :</label>
-        <input type="text" id="username" name="_username" value="{{ last_username }}" />
+            {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
 
-        <label for="password">Mot de passe :</label>
-        <input type="password" id="password" name="_password" />
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
 
-        <button class="btn btn-success" type="submit">Se connecter</button>
-    </form>
+            <form action="{{ path('login_check') }}" method="post" novalidate>
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">Nom d'utilisateur :</label>
+                    <input type="text" id="username" name="_username" value="{{ last_username }}"
+                           class="form-control" required autofocus>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Mot de passe :</label>
+                    <input type="password" id="password" name="_password"
+                           class="form-control" required>
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <div class="text-end">
+                    <button class="btn btn-success" type="submit">Se connecter</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
 {% endblock %}
