@@ -13,15 +13,18 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class TaskController extends AbstractController
 {
-    private EntityManagerInterface $entityManager;
-    private TaskRepository $taskRepository;
 
-    public function __construct(TaskRepository $taskRepository, EntityManagerInterface $entityManager)
+
+    public function __construct(private readonly TaskRepository $taskRepository)
     {
-        $this->taskRepository = $taskRepository;
-        $this->entityManager = $entityManager;
     }
 
+    /**
+     * Affiche la liste des tâches.
+     *
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route("/tasks", name: "task_list")]
     public function list(EntityManagerInterface $entityManager): Response
     {
@@ -29,6 +32,13 @@ class TaskController extends AbstractController
         return $this->render('task/list.html.twig', ['tasks' => $tasks]);
     }
 
+    /**
+     * Crée une nouvelle tâche.
+     *
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route("/tasks/create", name: "task_create")]
     public function create(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -39,8 +49,6 @@ class TaskController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->taskRepository->save($task);
-/*            $entityManager->persist($task);
-            $entityManager->flush();*/
 
             $this->addFlash('success', 'La tâche a bien été ajoutée.');
 
@@ -50,6 +58,14 @@ class TaskController extends AbstractController
         return $this->render('task/create.html.twig', ['form' => $form->createView()]);
     }
 
+    /**
+     * Modifie une tâche existante.
+     *
+     * @param Task $task
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route("/tasks/{id}/edit", name: "task_edit")]
     public function edit(Task $task, Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -70,17 +86,32 @@ class TaskController extends AbstractController
         ]);
     }
 
+    /**
+     * Bascule l’état (faite / non faite) d’une tâche.
+     *
+     * @param Task $task
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route("/tasks/{id}/toggle", name: "task_toggle")]
     public function toggleTask(Task $task, EntityManagerInterface $entityManager): Response
     {
         $task->toggle(!$task->isDone());
         $entityManager->flush();
-
-        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
+        if ($task->isDone() === true) {
+            $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
+        }
 
         return $this->redirectToRoute('task_list');
     }
 
+    /**
+     * Supprime une tâche.
+     *
+     * @param Task $task
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route("/tasks/{id}/delete", name: "task_delete")]
     public function deleteTask(Task $task, EntityManagerInterface $entityManager): Response
     {

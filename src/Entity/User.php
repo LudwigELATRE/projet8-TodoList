@@ -14,6 +14,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity("email")]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -32,7 +34,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private string $email;
 
     #[ORM\Column]
-    private array $roles = [];
+    private array $roles;
+
+    /**
+     * Constructeur de l'utilisateur.
+     * Initialise le rôle par défaut à ROLE_USER.
+     */
+    public function __construct()
+    {
+        $this->roles = ['ROLE_USER'];
+    }
 
     public function getId(): ?int
     {
@@ -72,17 +83,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        $roles[] = 'ROLE_USER';
-
         return array_unique($roles);
+    }
+
+    /**
+     * Définit les rôles de l'utilisateur.
+     *
+     * @param array $roles
+     * @return self
+     */
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
     }
 
     public function eraseCredentials(): void
     {
     }
 
+    /**
+     * Retourne l'identifiant unique de l'utilisateur (utilisé par Symfony Security).
+     *
+     * @return string
+     */
     public function getUserIdentifier(): string
     {
-        return $this->email;
+        return $this->username;
     }
 }

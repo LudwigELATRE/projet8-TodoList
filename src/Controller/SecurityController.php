@@ -11,27 +11,57 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-    #[Route("/login", name: "login")]
-    public function login(Request $request, AuthenticationUtils $authenticationUtils): Response
-    {
-        $error = $authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $authenticationUtils->getLastUsername();
 
+
+    /**
+     * SecurityController constructor.
+     *
+     * @param AuthenticationUtils $authenticationUtils
+     */
+    public function __construct(private readonly AuthenticationUtils $authenticationUtils)
+    {
+    }
+
+    /**
+     * Affiche le formulaire de connexion et gère les erreurs de login.
+     *
+     * @return Response
+     */
+    #[Route("/login", name: "login")]
+    public function login(): Response
+    {
+        if ($this->getUser() === true) {
+            return $this->redirectToRoute('default');
+        }
+
+        $error = $this->authenticationUtils->getLastAuthenticationError();
+        $lastUsername = $this->authenticationUtils->getLastUsername();
         return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error,
         ]);
     }
 
+    /**
+     * Login_check route - this method is never executed.
+     *
+     * Symfony intercepts this route via the firewall configuration.
+     */
     #[Route("/login_check", name: "login_check")]
     public function loginCheck(): void
     {
         // This code is never executed.
+        throw new \LogicException('Cette méthode ne doit jamais être exécutée directement. Elle est gérée par le firewall.');
     }
 
+    /**
+     * Logout route - this method is never executed.
+     *
+     * Symfony intercepts this route via the firewall configuration.
+     */
     #[Route("/logout", name: "logout")]
-    public function logout(): void
+    public function logout(): Response
     {
-        // This code is never executed.
+        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 }
