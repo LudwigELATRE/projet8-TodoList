@@ -6,11 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="1ac628ef-0a32-4172-b232-2769a73ae292" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/css/shop-homepage.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/css/shop-homepage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/SecurityController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/SecurityController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/TaskController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/TaskController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/UserController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/UserController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Entity/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Entity/User.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/user/edit.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/user/edit.html.twig" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -191,7 +187,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "feature/loginandlogoutuser",
+    "git-widget-placeholder": "feature/amelioration-du-style-de-l-application",
     "last_opened_file_path": "/Users/ludwigelatre/Documents/projet-to-do-list-openclassroom/projet8-TodoList",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -239,7 +235,7 @@
       <workItem from="1741946063233" duration="4625000" />
       <workItem from="1741959731666" duration="8406000" />
       <workItem from="1742057081985" duration="2415000" />
-      <workItem from="1742544562145" duration="23406000" />
+      <workItem from="1742544562145" duration="39369000" />
     </task>
     <servers />
   </component>
