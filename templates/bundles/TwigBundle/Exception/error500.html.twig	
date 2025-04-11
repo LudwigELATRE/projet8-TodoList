@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur serveur{% endblock %}
+
+{% block body %}
+    <div class="container text-center mt-5">
+        <h1 class="display-4">500 - Erreur interne</h1>
+        <p class="lead">Oups, quelque chose s'est mal passé. Nos équipes sont sur le coup !</p>
+        <a href="{{ path('app_home') }}" class="btn btn-danger mt-3">Retour à l’accueil</a>
+    </div>
+{% endblock %}
