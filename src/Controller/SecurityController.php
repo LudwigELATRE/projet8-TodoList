@@ -12,21 +12,10 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class SecurityController extends AbstractController
 {
 
-
-    /**
-     * SecurityController constructor.
-     *
-     * @param AuthenticationUtils $authenticationUtils
-     */
     public function __construct(private readonly AuthenticationUtils $authenticationUtils)
     {
     }
 
-    /**
-     * Affiche le formulaire de connexion et gère les erreurs de login.
-     *
-     * @return Response
-     */
     #[Route("/login", name: "login")]
     public function login(): Response
     {
@@ -42,11 +31,6 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    /**
-     * Login_check route - this method is never executed.
-     *
-     * Symfony intercepts this route via the firewall configuration.
-     */
     #[Route("/login_check", name: "login_check")]
     public function loginCheck(): void
     {
@@ -54,11 +38,6 @@ class SecurityController extends AbstractController
         throw new \LogicException('Cette méthode ne doit jamais être exécutée directement. Elle est gérée par le firewall.');
     }
 
-    /**
-     * Logout route - this method is never executed.
-     *
-     * Symfony intercepts this route via the firewall configuration.
-     */
     #[Route("/logout", name: "logout")]
     public function logout(): Response
     {
