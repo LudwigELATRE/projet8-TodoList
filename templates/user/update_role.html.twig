@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block header_title %}
+    <h1>Modifier le rôle de <strong>{{ user.username }}</strong></h1>
+{% endblock %}
+
+{% block header_img %}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+            <div class="mb-3">
+                {{ form_label(form.roles, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.roles, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.roles) }}
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-success">Modifier le rôle</button>
+            </div>
+
+            {{ form_end(form) }}
+
+        </div>
+    </div>
+{% endblock %}

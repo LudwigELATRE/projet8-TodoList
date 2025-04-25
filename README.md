@@ -89,13 +89,14 @@ Un rapport HTML sera disponible dans le dossier `var/coverage/index.html`.
 
 ## 🛠 Commandes Make disponibles
 
-| Commande         | Description                                                             |
-|------------------|-------------------------------------------------------------------------|
-| `make start`     | Démarre le serveur Symfony interne en arrière-plan                      |
-| `make stop`      | Arrête le serveur Symfony                                               |
-| `make start-db`  | Lance les conteneurs Docker (ex : base de données)                      |
-| `make migrate`   | Exécute les migrations Doctrine dans le conteneur Docker                |
-| `make test`      | Lance PHPUnit avec Xdebug pour générer un rapport de couverture         |
+| Commande             | Description                                                                       |
+|----------------------|-----------------------------------------------------------------------------------|
+| `make start`         | Démarre le serveur Symfony interne en arrière-plan                                |
+| `make stop`          | Arrête le serveur Symfony                                                         |
+| `make start-db`      | Lance les conteneurs Docker (ex : base de données)                                |
+| `make migrate`       | Exécute les migrations Doctrine dans le conteneur Docker                          |
+| `make test-fixtures` | Lance la base test a été remplie avec des données de test pour les test unitaire" |
+| `make test`          | Lance PHPUnit avec Xdebug pour générer un rapport de couverture                   |
 
 ---
 

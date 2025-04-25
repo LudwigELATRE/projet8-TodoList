@@ -19,7 +19,7 @@ class SecurityController extends AbstractController
     #[Route("/login", name: "login")]
     public function login(): Response
     {
-        if ($this->getUser() === true) {
+        if ($this->getUser()) {
             return $this->redirectToRoute('default');
         }
 
@@ -32,6 +32,9 @@ class SecurityController extends AbstractController
     }
 
     #[Route("/login_check", name: "login_check")]
+    /**
+     * @codeCoverageIgnore
+     */
     public function loginCheck(): void
     {
         // This code is never executed.
@@ -39,6 +42,9 @@ class SecurityController extends AbstractController
     }
 
     #[Route("/logout", name: "logout")]
+    /**
+     * @codeCoverageIgnore
+     */
     public function logout(): Response
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');

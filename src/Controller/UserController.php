@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\UserRoleType;
 use App\Form\UserType;
+use App\Repository\TaskRepository;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,13 +19,24 @@ class UserController extends AbstractController
     public function __construct(
         private UserRepository $userRepository,
         private UserPasswordHasherInterface $passwordHasher,
-        private AuthorizationCheckerInterface $authorizationChecker
+        private AuthorizationCheckerInterface $authorizationChecker,
+        private readonly TaskRepository $taskRepository
     ) {}
 
-    #[Route('/users/list', name: 'user_list')]
-    public function listAction(): Response
+    #[Route('admin/users/list', name: 'user_list')]
+    public function listUsers(): Response
     {
         $users = $this->userRepository->findAll();
+
+        return $this->render('user/list.html.twig', [
+            'users' => $users
+        ]);
+    }
+
+    #[Route('manager/users/list', name: 'user_list_manager')]
+    public function listUserForManager(): Response
+    {
+        $users = $this->userRepository->listUsersWithUserAndManagerRoles();
 
         return $this->render('user/list.html.twig', [
             'users' => $users
@@ -58,7 +71,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/users/{id}/edit', name: 'user_edit')]
+    #[Route('/user/{id}/edit', name: 'user_edit')]
     public function editAction(User $user, Request $request): Response
     {
         $form = $this->createForm(UserType::class, $user);
@@ -73,7 +86,7 @@ class UserController extends AbstractController
             $this->userRepository->save($user);
             $this->addFlash('success', "L'utilisateur a bien été modifié.");
 
-            return $this->redirectToRoute('user_list');
+            return $this->redirectToRoute('user_profile');
         }
 
         return $this->render('user/edit.html.twig', [
@@ -91,12 +104,15 @@ class UserController extends AbstractController
             return $this->redirectToRoute('login');
         }
 
+        $taskStats = $this->taskRepository->countTasksByUser($user);
+
         return $this->render('user/profile.html.twig', [
-            'user' => $user
+            'user' => $user,
+            'taskStats' => $taskStats
         ]);
     }
 
-    #[Route('/users/{id}/delete', name: 'user_delete', methods: ['POST'])]
+    #[Route('/admin/user/{id}/delete', name: 'user_delete')]
     public function deleteAction(Request $request, User $user): Response
     {
         // Protection CSRF
@@ -107,4 +123,50 @@ class UserController extends AbstractController
 
         return $this->redirectToRoute('user_list');
     }
+
+    #[Route('/admin/users/{id}/edit-role', name: 'user_update_role')]
+    public function editRoleForm(Request $request, User $user): Response
+    {
+        // Empêche un utilisateur de modifier son propre rôle
+        if ($this->getUser()?->getId() === $user->getId()) {
+            $this->addFlash('warning', 'Vous ne pouvez pas modifier votre propre rôle.');
+            return $this->redirectToRoute('user_list');
+        }
+
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $availableRoles = [
+                'Administrateur' =>'ROLE_ADMIN',
+                'Utilisateur' => 'ROLE_USER',
+                'Manager' => 'ROLE_MANAGER'];
+        } elseif ($this->isGranted('ROLE_MANAGER')) {
+            $availableRoles = [
+                'Utilisateur' => 'ROLE_USER',
+                'Manager' => 'ROLE_MANAGER'];
+        } else {
+            throw $this->createAccessDeniedException('Accès refusé.');
+        }
+
+        $form = $this->createForm(UserRoleType::class, $user, [
+            'available_roles' => $availableRoles,
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $selectedRole = ($form->get('roles')->getData());
+
+            $user->setRoles($selectedRole);
+
+            $this->userRepository->save($user);
+            $this->addFlash('success', 'Le rôle a bien été mis à jour.');
+
+            return $this->redirectToRoute('user_list');
+        }
+
+        return $this->render('user/update_role.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user,
+            'available_roles' => ['ROLE_ADMIN', 'ROLE_USER', 'ROLE_CUSTOMER'],
+        ]);
+    }
+
 }
