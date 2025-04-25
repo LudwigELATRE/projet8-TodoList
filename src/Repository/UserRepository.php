@@ -32,7 +32,7 @@ class UserRepository extends ServiceEntityRepository
     /**
      * Finds a user by their email.
      */
-/*    public function findOneByEmail(string $email): ?User
+/*    public function findOneByEmail(string $email): ?UserFixtures
     {
         return $this->createQueryBuilder('u')
             ->andWhere('u.email = :email')

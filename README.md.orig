@@ -119,7 +119,8 @@ Consultez le fichier `CONTRIBUTING.md` pour connaître les conventions de dével
 ## 🧪 Audit & Qualité
 
 Un audit de code et un audit de performance peuvent être réalisés avec :
-- [PHPStan](https://phpstan.org/)- [Symfony Profiler](https://symfony.com/doc/current/profiler.html)
+- [PHPStan](https://phpstan.org/)
+- [Symfony Profiler](https://symfony.com/doc/current/profiler.html)
 - [Codacy](https://www.codacy.com/) ou [SonarCloud](https://sonarcloud.io/)
 
 ---

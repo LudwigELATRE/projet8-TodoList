@@ -20,7 +20,7 @@ class UserController extends AbstractController
         private AuthorizationCheckerInterface $authorizationChecker
     ) {}
 
-    #[Route('/users', name: 'user_list')]
+    #[Route('/users/list', name: 'user_list')]
     public function listAction(): Response
     {
         $users = $this->userRepository->findAll();

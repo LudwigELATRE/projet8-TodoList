@@ -6,20 +6,24 @@ use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class TaskController extends AbstractController
 {
-    public function __construct(private readonly TaskRepository $taskRepository)
+    public function __construct(private readonly TaskRepository $taskRepository, private readonly Security $security)
     {
     }
 
     #[Route("/tasks", name: "task_list_start")]
     public function list(): Response
     {
-        $tasks = $this->taskRepository->findBy(['isDone' => false]);
+        $tasks = $this->taskRepository->findBy([
+            'user' => $this->getUser(),
+            'isDone' => false,
+        ]);
         return $this->render('task/list.html.twig', ['tasks' => $tasks]);
     }
 
@@ -39,7 +43,9 @@ class TaskController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->taskRepository->save($task); // méthode personnalisée recommandée
+            $user = $this->security->getUser();
+            $task->setUser($user);
+            $this->taskRepository->save($task);
             $this->addFlash('success', 'La tâche a bien été ajoutée.');
             return $this->redirectToRoute('task_list_start');
         }
