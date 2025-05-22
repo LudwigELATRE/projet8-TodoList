@@ -16,10 +16,6 @@ start-db:
 	docker-compose up -d
 	@echo "✅ Conteneurs lancés. Accédez à l'app avec 'make server' ou via votre navigateur."
 
-test-fixtures:
-	php bin/console hautelook:fixtures:load --env=test --no-interaction
-	@echo "✅ La base test a été remplie avec des données de test"
-
 test:
 	php bin/console hautelook:fixtures:load --env=test --no-interaction
 	@echo "✅ La base test a été remplie avec des données de test"

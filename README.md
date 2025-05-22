@@ -1,6 +1,7 @@
 # ✅ ToDo & Co – Application Symfony de gestion de tâches
 
-ToDo & Co est une application Symfony permettant aux utilisateurs de gérer leurs tâches quotidiennes. Elle intègre un système d'authentification avec gestion des rôles (utilisateur/admin) et un ensemble de règles d'autorisation.
+ToDo & Co est une application Symfony permettant aux utilisateurs de gérer leurs tâches quotidiennes.  
+Elle intègre un système d'authentification avec gestion des rôles (`ROLE_USER`, `ROLE_MANAGER`, `ROLE_ADMIN`) et un ensemble de règles d'autorisation.
 
 ---
 
@@ -18,20 +19,20 @@ Avant de commencer, assurez-vous d’avoir installé :
 
 ## 🚀 Installation du projet
 
-1. Clonez ce dépôt :
+Clonez ce dépôt :
 
 ```bash
 git clone https://github.com/<votre-utilisateur>/todo-co.git
 cd todo-co
 ```
 
-2. Installez les dépendances :
+Installez les dépendances :
 
 ```bash
 composer install
 ```
 
-3. Copiez le fichier `.env` :
+Copiez le fichier `.env` :
 
 ```bash
 cp .env .env.local
@@ -43,13 +44,13 @@ Configurez les accès à la base de données dans `.env.local` :
 DATABASE_URL="mysql://user:password@127.0.0.1:3306/todo_co_db"
 ```
 
-4. Lancez la base de données :
+Lancez la base de données :
 
 ```bash
 make start-db
 ```
 
-5. Lancez les migrations :
+Lancez les migrations :
 
 ```bash
 make migrate
@@ -75,28 +76,67 @@ make stop
 
 ---
 
-## ✅ Lancer les tests
+## 📌 Fonctionnalités principales
 
-Pour exécuter la suite de tests et générer un rapport de couverture :
+- Inscription et connexion des utilisateurs
+- Gestion des rôles : `ROLE_USER`, `ROLE_MANAGER`, `ROLE_ADMIN`
+- Attribution automatique de l’utilisateur connecté à la tâche créée
+- Affichage et gestion des tâches selon les droits
+- Suppression des tâches uniquement par l’auteur
+- Suppression des tâches anonymes uniquement par les administrateurs et managers
+- Accès aux pages d'administration restreint aux administrateurs
+- Sélection et modification des rôles utilisateurs (ADMIN uniquement vers admin ou manager)
+
+---
+
+## 🔐 Authentification
+
+Le projet utilise le système de sécurité de Symfony :
+
+- Stockage des utilisateurs dans la base de données (Entity `User`)
+- Authentification via formulaire de login
+- Attribution des rôles lors de la création ou modification d’un utilisateur
+- Droits gérés avec un système de `Voter` (ex. : suppression de tâche)
+- Encodage des mots de passe avec `UserPasswordHasher`
+
+---
+
+## 🧪 Tests automatisés
+
+L’application utilise `PHPUnit` pour les tests automatisés.
+
+Exécution des tests + chargement des fixtures + rapport de couverture :
 
 ```bash
 make test
 ```
 
-Un rapport HTML sera disponible dans le dossier `var/coverage/index.html`.
+Cela effectue :
+
+- Le chargement des fixtures en base de test
+- L’exécution de tous les tests unitaires et fonctionnels
+- La génération d’un rapport HTML dans : `var/coverage/index.html`
+
+### Objectif qualité
+
+- Couverture minimale visée : **70%**
+- Cas critiques testés :
+    - Accès rôles / droits
+    - Création et suppression de tâches
+    - Modification de rôle utilisateur
+    - Suppression conditionnelle des tâches “anonymes”
 
 ---
 
 ## 🛠 Commandes Make disponibles
 
-| Commande             | Description                                                                       |
-|----------------------|-----------------------------------------------------------------------------------|
-| `make start`         | Démarre le serveur Symfony interne en arrière-plan                                |
-| `make stop`          | Arrête le serveur Symfony                                                         |
-| `make start-db`      | Lance les conteneurs Docker (ex : base de données)                                |
-| `make migrate`       | Exécute les migrations Doctrine dans le conteneur Docker                          |
-| `make test-fixtures` | Lance la base test a été remplie avec des données de test pour les test unitaire" |
-| `make test`          | Lance PHPUnit avec Xdebug pour générer un rapport de couverture                   |
+| Commande             | Description                                                                 |
+|----------------------|-----------------------------------------------------------------------------|
+| `make start`         | Démarre le serveur Symfony en arrière-plan                                 |
+| `make stop`          | Arrête le serveur Symfony                                                   |
+| `make start-db`      | Lance les conteneurs Docker (ex : base de données)                          |
+| `make migrate`       | Exécute les migrations Doctrine dans le conteneur Docker                    |
+| `make test`          | Charge les fixtures de test, lance les tests PHPUnit, génère la couverture |
 
 ---
 
@@ -111,17 +151,26 @@ Un rapport HTML sera disponible dans le dossier `var/coverage/index.html`.
 
 ---
 
-## 🤝 Contribution
+## 📊 Audit & Qualité
 
-Consultez le fichier `CONTRIBUTING.md` pour connaître les conventions de développement, les étapes de contribution et les bonnes pratiques du projet.
+Des audits ont été réalisés avec :
+
+- ✅ **Codacy** ou **SonarCloud** : audit qualité du code
+- ✅ **Symfony Profiler** : audit des performances
+- ✅ **PHPStan** : vérification statique du code
+
+Un rapport d’audit complet est fourni dans le dossier `/docs`.
 
 ---
 
-## 🧪 Audit & Qualité
+## 🤝 Contribution
 
-Un audit de code et un audit de performance peuvent être réalisés avec :
-- [PHPStan](https://phpstan.org/)- [Symfony Profiler](https://symfony.com/doc/current/profiler.html)
-- [Codacy](https://www.codacy.com/) ou [SonarCloud](https://sonarcloud.io/)
+Consultez le fichier `CONTRIBUTING.md` pour connaître :
+
+- les conventions de développement ;
+- les règles de nommage ;
+- le workflow Git ;
+- les étapes de contribution.
 
 ---
 

@@ -16,7 +16,17 @@ class UserControllerTest extends WebTestCase
         $user = static::getContainer()->get(UserRepository::class)->findOneBy(['email' => 'admin@example.com']);
         $client->loginUser($user);
 
-        $client->request('GET', '/users/list');
+        $client->request('GET', 'admin/users/list');
+        self::assertResponseIsSuccessful();
+    }
+
+    public function testUserListUserForManager(): void
+    {
+        $client = static::createClient();
+        $user = static::getContainer()->get(UserRepository::class)->findOneBy(['email' => 'manager@example.com']);
+        $client->loginUser($user);
+
+        $client->request('GET', 'manager/users/list');
         self::assertResponseIsSuccessful();
     }
 
@@ -58,7 +68,7 @@ class UserControllerTest extends WebTestCase
         $user = $userRepo->findOneBy(['email' => 'newusertestcreate@example.com']);
         $client->loginUser($user);
 
-        $crawler = $client->request('PUT', '/users/' . $user->getId() . '/edit');
+        $crawler = $client->request('GET', '/user/' . $user->getId() . '/edit');
         self::assertResponseIsSuccessful();
 
         $form = $crawler->selectButton('Modifier')->form([
@@ -69,8 +79,9 @@ class UserControllerTest extends WebTestCase
         ]);
         $client->submit($form);
 
-        self::assertResponseRedirects('/users/list');
+        self::assertResponseRedirects('/user/profile');
         $client->followRedirect();
+        self::assertResponseIsSuccessful();
     }
 
     public function testProfileAsAuthenticatedUser(): void
@@ -139,7 +150,7 @@ class UserControllerTest extends WebTestCase
         $em->persist($userToDelete);
         $em->flush();
 
-        $client->request('POST', '/users/' . $userToDelete->getId() . '/delete', [
+        $client->request('POST', '/user/' . $userToDelete->getId() . '/delete', [
             '_token' => 'invalid-token',
         ]);
 
