@@ -7,12 +7,9 @@
 {% endblock %}
 
 {% block body %}
-    {% set other_users = users|filter(user => user != app.user) %}
-
-    {% if other_users|length == 0 %}
+    {% if tasks == 0 %}
         <div class="alert alert-warning" role="alert">
-            Il n'y a pas d'autres utilisateurs enregistrés.
-            <a href="{{ path('user_create') }}" class="btn btn-warning pull-right">Créer un utilisateur</a>
+            Il n'y a pas de Tache anonyme enregistrés.
         </div>
     {% else %}
         <div class="row">
@@ -36,30 +33,23 @@
                     <thead>
                     <tr>
                         <th>#</th>
-                        <th>Nom d'utilisateur</th>
-                        <th>Adresse e-mail</th>
-                        <th>Actions</th>
-                        <th>Roles</th>
+                        <th>Titre</th>
+                        <th>Contenue</th>
+                        <th>Statut</th>
+                        <th>Utilisateur</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for user in other_users %}
+                    {% for task in tasks %}
                         <tr>
                             <th scope="row">{{ loop.index }}</th>
-                            <td>{{ user.username }}</td>
-                            <td>{{ user.email }}</td>
-                            <td>{{ user.roles[0] }}</td>
+                            <td>{{ task.title }}</td>
+                            <td>{{ task.content|slice(0, 120) }}{% if task.content|length > 120 %}…{% endif %}</td>
+                            <td>{{ task.isDone ? 'Oui' : 'Non' }}</td>
+                            <td>Anonyme</td>
                             <td class="d-flex">
-                                {% if app.user and 'ROLE_ADMIN' in app.user.roles %}
-                                    <form method="post" action="{{ path('user_delete', { id: user.id }) }}"
-                                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
-                                        <input type="hidden" name="_token"
-                                               value="{{ csrf_token('delete_user_' ~ user.id) }}">
-                                        <button class="btn btn-danger btn-sm m-1">Supprimer</button>
-                                    </form>
-                                {% endif %}
-                                <a href="{{ path('user_update_role', { id: user.id }) }}"
-                                   class="btn btn-warning btn-sm m-1">Modifier rôle</a>
+                                <a href="{{ path('task_delete', { id: task.id }) }}"
+                                   class="btn btn-danger btn-sm m-1">Supprimer cette tache</a>
                             </td>
                         </tr>
                     {% endfor %}

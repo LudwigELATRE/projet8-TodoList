@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class UserController extends AbstractController
 {
@@ -23,7 +24,8 @@ class UserController extends AbstractController
         private readonly TaskRepository $taskRepository
     ) {}
 
-    #[Route('admin/users/list', name: 'user_list')]
+    #[Route('admin/users/list', name: 'user_list_admin')]
+    #[IsGranted('ROLE_ADMIN')]
     public function listUsers(): Response
     {
         $users = $this->userRepository->findAll();
@@ -34,6 +36,7 @@ class UserController extends AbstractController
     }
 
     #[Route('manager/users/list', name: 'user_list_manager')]
+    #[IsGranted('ROLE_MANAGER')]
     public function listUserForManager(): Response
     {
         $users = $this->userRepository->listUsersWithUserAndManagerRoles();
@@ -113,6 +116,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/admin/user/{id}/delete', name: 'user_delete')]
+    #[IsGranted('ROLE_ADMIN')]
     public function deleteAction(Request $request, User $user): Response
     {
         // Protection CSRF
@@ -125,6 +129,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/admin/users/{id}/edit-role', name: 'user_update_role')]
+    #[IsGranted('ROLE_ADMIN')]
     public function editRoleForm(Request $request, User $user): Response
     {
         // Empêche un utilisateur de modifier son propre rôle
