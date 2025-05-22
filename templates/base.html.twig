@@ -42,8 +42,14 @@
     <div class="row mb-3">
         <div class="col-md-12 d-flex justify-content-end align-items-center gap-2">
 
+            <a href="{{ path('default') }}" class="btn btn-primary">Acceuil</a>
+
             {% if app.user and 'ROLE_ADMIN' in app.user.roles %}
                 <a href="{{ path('user_list') }}" class="btn btn-warning">Administration</a>
+            {% endif %}
+
+            {% if app.user and 'ROLE_MANAGER' in app.user.roles %}
+                <a href="{{ path('user_list_manager') }}" class="btn btn-warning">Manageur</a>
             {% endif %}
 
             {% if not app.user %}
@@ -62,6 +68,23 @@
     <!-- Flash messages -->
     <div class="row">
         <div class="col-md-12">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} flash-{{ label }}" role="alert">
+                        {% if label == 'success' %}
+                            <strong>Superbe !</strong>
+                        {% elseif label == 'error' %}
+                            <strong>Oops !</strong>
+                        {% endif %}
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+
+    {#    <div class="row">
+        <div class="col-md-12">
             {% for flash_message in app.session.flashBag.get('success') %}
                 <div class="alert alert-success" role="alert">
                     <strong>Superbe !</strong> {{ flash_message }}
@@ -74,7 +97,7 @@
                 </div>
             {% endfor %}
         </div>
-    </div>
+    </div>#}
 
     <!-- En-tête personnalisable -->
     <div class="row">

@@ -21,6 +21,34 @@ class UserRepository extends ServiceEntityRepository
         }
     }
 
+    public function listUsersWithUserAndManagerRoles(): array
+    {
+        $users = [];
+        $userWithRoleUser = $this->createQueryBuilder('u')
+            ->where('u.roles LIKE :roleUser')
+            ->setParameter('roleUser', '%ROLE_USER%')
+            ->getQuery()
+            ->getResult();
+
+        $managerWithRoleManager = $this->createQueryBuilder('u')
+            ->where('u.roles LIKE :roleManager')
+            ->setParameter('roleManager', '%ROLE_MANAGER%')
+            ->getQuery()
+            ->getResult();
+
+        foreach ($managerWithRoleManager as $user) {
+            $users[] = $user;
+        }
+
+        foreach ($userWithRoleUser as $user) {
+            $users[] = $user;
+        }
+
+
+        return $users;
+    }
+
+
     public function remove(User $user, bool $flush = true): void
     {
         $this->getEntityManager()->remove($user);

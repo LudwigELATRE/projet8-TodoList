@@ -3,20 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\Task;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Optional EntityRepository base class with a simplified constructor (for autowiring).
- * To use in your class, inject the "registry" service and call the parent constructor. For example:
- * class YourEntityRepository extends ServiceEntityRepository { public function __construct(ManagerRegistry $registry) { parent::__construct($registry, YourEntity::class); } }
- *
- * @extends ServiceEntityRepository<Task>
- *
- * @method Task|null find($id, $lockMode = null, $lockVersion = null)
- * @method Task|null findOneBy(array $criteria, array $orderBy = null)
- * @method Task[]    findAll()
- * @method Task[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @codeCoverageIgnore
  */
 class TaskRepository extends ServiceEntityRepository
 {
@@ -41,6 +33,17 @@ class TaskRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function countTasksByUser(User $user): array
+    {
+        $qb = $this->createQueryBuilder('t')
+            ->select('SUM(CASE WHEN t.isDone = true THEN 1 ELSE 0 END) AS doneCount')
+            ->addSelect('SUM(CASE WHEN t.isDone = false THEN 1 ELSE 0 END) AS notDoneCount')
+            ->where('t.user = :user')
+            ->setParameter('user', $user);
+
+        return $qb->getQuery()->getSingleResult();
     }
 
     /**
