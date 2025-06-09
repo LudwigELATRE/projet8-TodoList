@@ -20,4 +20,6 @@ test:
 	php bin/console hautelook:fixtures:load --env=test --no-interaction
 	@echo "✅ La base test a été remplie avec des données de test"
 	XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-html var/coverage
+	php bin/console hautelook:fixtures:load --env=test --no-interaction
+	XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-clover=var/coverage/clover.xml
 	@echo "✅ Rapport de couverture généré dans var/coverage/index.html"
