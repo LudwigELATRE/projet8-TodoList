@@ -11,3 +11,10 @@ App\Entity\User:
     roles: ['ROLE_ADMIN']
     plainPassword: 'password'
 
+
+  manager_{1}:
+    username: 'manager'
+    email: 'manager@example.com'
+    roles: ['ROLE_MANAGER']
+    plainPassword: 'password'
+

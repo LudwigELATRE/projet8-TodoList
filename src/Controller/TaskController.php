@@ -10,6 +10,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class TaskController extends AbstractController
 {
@@ -25,6 +26,18 @@ class TaskController extends AbstractController
             'isDone' => false,
         ]);
         return $this->render('task/list.html.twig', ['tasks' => $tasks]);
+    }
+
+    #[Route("manager/tasks", name: "task_list_anonyme")]
+    #[IsGranted('ROLE_MANAGER')]
+    public function listTaskAnonymeForManager(): Response
+    {
+        $tasks = $this->taskRepository->findBy([
+            'user' => NULL,
+            'isDone' => false,
+        ]);
+
+        return $this->render('task/anonyme_task.html.twig', ['tasks' => $tasks]);
     }
 
     #[Route("/tasks/end", name: "task_list_end")]

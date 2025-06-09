@@ -45,7 +45,7 @@
             <a href="{{ path('default') }}" class="btn btn-primary">Acceuil</a>
 
             {% if app.user and 'ROLE_ADMIN' in app.user.roles %}
-                <a href="{{ path('user_list') }}" class="btn btn-warning">Administration</a>
+                <a href="{{ path('user_list_admin') }}" class="btn btn-warning">Administration</a>
             {% endif %}
 
             {% if app.user and 'ROLE_MANAGER' in app.user.roles %}

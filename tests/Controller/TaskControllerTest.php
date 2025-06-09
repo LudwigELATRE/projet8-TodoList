@@ -3,6 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Task;
+use App\Repository\TaskRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -116,9 +117,9 @@ class TaskControllerTest extends WebTestCase
         $client->loginUser($user);
 
         // Création d'une tâche
-        $task = new \App\Entity\Task();
-        $task->setTitle('Tâche originale');
-        $task->setContent('Contenu original');
+        $task = new Task();
+        $task->setTitle('Tâche testEditTask');
+        $task->setContent('Contenu testEditTask');
         $task->setUser($user);
         $em->persist($task);
         $em->flush();
@@ -137,6 +138,65 @@ class TaskControllerTest extends WebTestCase
         // Vérification de la redirection
         self::assertResponseRedirects('/tasks');
         $client->followRedirect();
+    }
+
+    public function testListTasksForUser(): void
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
+
+        // Récupérer le repository User
+        $userRepo = $container->get(UserRepository::class);
+        $em = $container->get(EntityManagerInterface::class);
+
+        // Récupère un user de test
+        $user = $userRepo->findOneBy(['email' => 'user@example.com']);
+
+        // Crée une tâche non terminée pour ce user (si besoin)
+        $task = new Task();
+        $task->setTitle('Ma tâche pour testListTasksForUser');
+        $task->setContent('Contenu testListTasksForUser');
+        $task->toggle(false);
+        $task->setUser($user);
+        $em->persist($task);
+        $em->flush();
+
+        // Connexion de l'utilisateur
+        $client->loginUser($user);
+
+        // Requête GET sur la liste des tâches
+        $crawler = $client->request('GET', '/tasks');
+
+        // Vérifie le code HTTP 200
+        self::assertResponseIsSuccessful();
+
+        // Vérifie qu'on retrouve le titre de la tâche dans le HTML
+        self::assertSelectorTextContains('body', 'Ma tâche pour testListTasksForUser');
+    }
+
+    public function testListAnonymeTasksForManager()
+    {
+        $client = static::createClient();
+        $manager = static::getContainer()->get(UserRepository::class)->findOneBy(['email' => 'manager@example.com']);
+
+        if (!in_array('ROLE_MANAGER', $manager->getRoles())) {
+            $this->markTestSkipped('No manager user found for this test.');
+        }
+        $client->loginUser($manager);
+
+        $entityManager = static::getContainer()->get('doctrine')->getManager();
+        $task = new Task();
+        $task->setTitle('Tâche pour testListAnonymeTasksForManager');
+        $task->setContent('Contenu testListAnonymeTasksForManager');
+        $task->toggle(false);
+        $task->setUser(null);
+        $entityManager->persist($task);
+        $entityManager->flush();
+
+        $crawler = $client->request('GET', '/manager/tasks');
+        self::assertResponseIsSuccessful();
+
+        self::assertSelectorTextContains('body', 'Tâche pour testListAnonymeTasksForManager');
     }
 
 }
