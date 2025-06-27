@@ -22,8 +22,8 @@ Avant de commencer, assurez-vous d’avoir installé :
 Clonez ce dépôt :
 
 ```bash
-git clone https://github.com/<votre-utilisateur>/todo-co.git
-cd todo-co
+git clone https://github.com/LudwigELATRE/projet8-TodoList.git
+cd projet8-TodoList
 ```
 
 Installez les dépendances :
