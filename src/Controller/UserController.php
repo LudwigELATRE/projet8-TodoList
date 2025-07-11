@@ -7,6 +7,7 @@ use App\Form\UserRoleType;
 use App\Form\UserType;
 use App\Repository\TaskRepository;
 use App\Repository\UserRepository;
+use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +37,6 @@ class UserController extends AbstractController
     }
 
     #[Route('manager/users/list', name: 'user_list_manager')]
-    #[IsGranted('ROLE_MANAGER')]
     public function listUserForManager(): Response
     {
         $users = $this->userRepository->listUsersWithUserAndManagerRoles();
@@ -47,7 +47,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/create', name: 'user_create')]
-    public function createAction(Request $request): Response
+    public function createAction(Request $request, UserService $userService): Response
     {
         if ($this->authorizationChecker->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->redirectToRoute('default');
@@ -58,12 +58,7 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($user->getPassword()) {
-                $hashedPassword = $this->passwordHasher->hashPassword($user, $user->getPassword());
-                $user->setPassword($hashedPassword);
-            }
-
-            $this->userRepository->save($user);
+            $userService->create($user);
             $this->addFlash('success', "L'utilisateur a bien été ajouté.");
 
             return $this->redirectToRoute('login');
@@ -75,18 +70,13 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/{id}/edit', name: 'user_edit')]
-    public function editAction(User $user, Request $request): Response
+    public function editAction(User $user, Request $request, UserService $userService): Response
     {
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($user->getPassword()) {
-                $hashedPassword = $this->passwordHasher->hashPassword($user, $user->getPassword());
-                $user->setPassword($hashedPassword);
-            }
-
-            $this->userRepository->save($user);
+            $userService->update($user);
             $this->addFlash('success', "L'utilisateur a bien été modifié.");
 
             return $this->redirectToRoute('user_profile');
@@ -117,11 +107,11 @@ class UserController extends AbstractController
 
     #[Route('/admin/user/{id}/delete', name: 'user_delete')]
     #[IsGranted('ROLE_ADMIN')]
-    public function deleteAction(Request $request, User $user): Response
+    public function deleteAction(Request $request, User $user, UserService $userService): Response
     {
         // Protection CSRF
         if ($this->isCsrfTokenValid('delete_user_' . $user->getId(), $request->request->get('_token'))) {
-            $this->userRepository->remove($user);
+            $userService->delete($user);
             $this->addFlash('success', "L'utilisateur a bien été supprimé.");
         }
 
@@ -130,7 +120,7 @@ class UserController extends AbstractController
 
     #[Route('/admin/users/{id}/edit-role', name: 'user_update_role')]
     #[IsGranted('ROLE_ADMIN')]
-    public function editRoleForm(Request $request, User $user): Response
+    public function editRoleForm(Request $request, User $user, UserService $userService): Response
     {
         // Empêche un utilisateur de modifier son propre rôle
         if ($this->getUser()?->getId() === $user->getId()) {
@@ -159,9 +149,8 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $selectedRole = ($form->get('roles')->getData());
 
-            $user->setRoles($selectedRole);
+            $userService->updateRole($user, $selectedRole);
 
-            $this->userRepository->save($user);
             $this->addFlash('success', 'Le rôle a bien été mis à jour.');
 
             return $this->redirectToRoute('user_list');

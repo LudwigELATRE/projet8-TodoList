@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Audit de Performance Symfony</title>
+</head>
+<body>
+    <h1>📊 Audit de Performance - Symfony TodoList</h1>
+
+    <h2>⏱ Temps de chargement HTTP</h2>
+    <p><strong>Durée:</strong> 68.44 ms (GET /)</p>
+
+    <h2>⚙️ Stopwatch Symfony</h2>
+    <p><strong>Durée mesurée :</strong> 68 ms</p>
+
+    <h2>📁 Fichier Xdebug généré ?</h2>
+    <p><code>/var/tmp/cachegrind.out.50705
+</code>    </p>
+
+    <h2>📄 Rapport Apache Bench</h2>
+    <pre>This is ApacheBench, Version 2.3 &lt;$Revision: 1913912 $&gt;
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 127.0.0.1 (be patient).....done
+
+
+Server Software:        
+Server Hostname:        127.0.0.1
+Server Port:            8000
+
+Document Path:          /
+Document Length:        55695 bytes
+
+Concurrency Level:      10
+Time taken for tests:   1.909 seconds
+Complete requests:      100
+Failed requests:        0
+Total transferred:      5609000 bytes
+HTML transferred:       5569500 bytes
+Requests per second:    52.39 [#/sec] (mean)
+Time per request:       190.876 [ms] (mean)
+Time per request:       19.088 [ms] (mean, across all concurrent requests)
+Transfer rate:          2869.68 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.0      0       0
+Processing:    65  179  39.2    184     294
+Waiting:       32  150  39.3    154     266
+Total:         65  179  39.2    184     295
+
+Percentage of the requests served within a certain time (ms)
+  50%    184
+  66%    197
+  75%    202
+  80%    204
+  90%    220
+  95%    254
+  98%    289
+  99%    295
+ 100%    295 (longest request)
+    </pre>
+</body>
+</html>

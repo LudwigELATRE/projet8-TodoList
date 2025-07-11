@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
+use App\Service\TaskService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,9 +30,12 @@ class TaskController extends AbstractController
     }
 
     #[Route("manager/tasks", name: "task_list_anonyme")]
-    #[IsGranted('ROLE_MANAGER')]
-    public function listTaskAnonymeForManager(): Response
+    public function listTaskAnonymeForManager(Security $security): Response
     {
+        if (!$security->isGranted('ROLE_MANAGER') && !$security->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException();
+        }
+
         $tasks = $this->taskRepository->findBy([
             'user' => NULL,
             'isDone' => false,
@@ -48,7 +52,7 @@ class TaskController extends AbstractController
     }
 
     #[Route("/tasks/create", name: "task_create")]
-    public function create(Request $request): Response
+    public function create(Request $request, TaskService $taskService): Response
     {
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
@@ -56,9 +60,7 @@ class TaskController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $this->security->getUser();
-            $task->setUser($user);
-            $this->taskRepository->save($task);
+            $taskService->create($task);
             $this->addFlash('success', 'La tâche a bien été ajoutée.');
             return $this->redirectToRoute('task_list_start');
         }
@@ -67,13 +69,13 @@ class TaskController extends AbstractController
     }
 
     #[Route("/tasks/{id}/edit", name: "task_edit")]
-    public function edit(Task $task, Request $request): Response
+    public function edit(Task $task, Request $request, TaskService $taskService): Response
     {
         $form = $this->createForm(TaskType::class, $task);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->taskRepository->save($task);
+            $taskService->edit($task);
             $this->addFlash('success', 'La tâche a bien été modifiée.');
             return $this->redirectToRoute('task_list_start');
         }
@@ -85,15 +87,9 @@ class TaskController extends AbstractController
     }
 
     #[Route("/tasks/{id}/toggle", name: "task_toggle")]
-    public function toggleTask(Task $task, Request $request): Response
+    public function toggleTask(Task $task, Request $request, TaskService $taskService): Response
     {
-        $task->toggle(!$task->isDone());
-        $this->taskRepository->save($task);
-
-        $message = $task->isDone()
-            ? 'La tâche "%s" a bien été marquée comme faite.'
-            : 'La tâche "%s" a bien été marquée comme non terminée.';
-
+        $message = $taskService->toggle($task);
         $this->addFlash('success', sprintf($message, $task->getTitle()));
 
         // Redirige vers la page précédente
@@ -101,9 +97,9 @@ class TaskController extends AbstractController
     }
 
     #[Route("/tasks/{id}/delete", name: "task_delete")]
-    public function deleteTask(Task $task): Response
+    public function deleteTask(Task $task, TaskService $taskService): Response
     {
-        $this->taskRepository->remove($task);
+        $taskService->delete($task);
         $this->addFlash('success', 'La tâche a bien été supprimée.');
         return $this->redirectToRoute('task_list_start');
     }
